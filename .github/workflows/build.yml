@@ -1,0 +1,23 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Run Docker build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3.5.2
+
+      - name: Start docker build
+        run: |
+          docker build --progress plain --no-cache .
