@@ -10,14 +10,33 @@ on:
 
 jobs:
   build:
-    name: Run Docker build
-    runs-on: ubuntu-22.04
+    name: Run Docker build (${{ matrix.node }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 2
+    strategy:
+      matrix:
+        node:
+          - '16.20.2'
+          - '18.17.0'
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - window-latest
 
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3.5.2
 
-      - name: Start docker build
+      - name: Set up Node
+        uses: actions/setup-node@v3.7.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+
+      - name: Install dependencies
         run: |
-          docker build --progress plain --no-cache .
+          npm ci
+
+      - name: Run build
+        run: |
+          npm run build
